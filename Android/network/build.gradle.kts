@@ -1,11 +1,26 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+val propertiesFile = rootProject.file("secret.properties")
+val properties = Properties()
+properties.load(FileInputStream(propertiesFile))
+val localPropertyValue = properties.getProperty("base.url")
+val systemEnvValue = System.getenv("BASE_URL")
+rootProject.extensions.extraProperties["base_url"] = systemEnvValue ?: localPropertyValue
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
+    buildFeatures {
+        buildConfig = true
+    }
     namespace = "com.michredk.network"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -15,15 +30,22 @@ android {
     }
 
     buildTypes {
+        val baseUrl = rootProject.extra["base_url"] as String
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
+        }
+
+        debug {
+            buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -40,4 +62,18 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    // hilt
+    implementation(libs.hilt.android)
+    ksp(libs.dagger.hilt.android.compiler)
+    ksp (libs.androidx.hilt.compiler)
+
+    // Retrofit : A type-safe HTTP client for Android and Java.
+    implementation(libs.retrofit)
+    implementation(libs.okhttp.logging)
+    implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.kotlinx.serialization.json)
+
 }
