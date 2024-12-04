@@ -1,4 +1,4 @@
-package com.michredk.network
+package com.michredk.network.model
 
 import java.time.LocalDateTime
 

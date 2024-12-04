@@ -38,10 +38,11 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
+            buildConfigField("Boolean", "DEBUG", "false")
         }
 
         debug {
-            buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
+            buildConfigField("Boolean", "DEBUG", "true")
         }
     }
     compileOptions {
