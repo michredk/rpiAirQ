@@ -15,5 +15,5 @@ I started setting up my Raspberry Pi by creating a bootable image for the operat
 
 Nothing would work without proper sensors to collect the parameters we are interested in. After reseaching available hardware and considering costs, I chose the DHT11, a temperature and humidity sensor, and the PMS5003, a dust sensor that allows you to monitor air cleanliness. The PMS5003 measures PM1.0, PM2.5 and PM10 particles.
 
-The API will be responsible for sending sensor data to the app. Another decision I had to make was which technology to use for creating my REST API. I decided to use Go because it is lightweight and fast.  
+The API will be responsible for sending sensor data to the app. Another decision I had to make was which technology to use for creating my REST API. At first, I decided to use Go because it’s lightweight and fast. But later, I realized I couldn’t find any working examples of code for getting measurements from sensors written in Go, so I changed my plans and went with Python instead.
 
