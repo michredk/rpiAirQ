@@ -5,8 +5,8 @@ plugins {
 }
 
 android {
-    namespace = "com.michredk.common"
-    compileSdk = 35
+    namespace = "com.michredk.data"
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 24
@@ -38,6 +38,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(project(":common"))
+    implementation(project(":model"))
+    implementation(project(":network"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

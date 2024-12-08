@@ -1,7 +1,7 @@
 package com.michredk.network
 
-import com.michredk.network.model.NetworkSensorsData
+import com.michredk.network.model.NetworkSensorData
 
 interface AQNetworkDataSource {
-    suspend fun getData(): NetworkResponse<NetworkSensorsData>
+    suspend fun getData(): NetworkResponse<NetworkSensorData>
 }

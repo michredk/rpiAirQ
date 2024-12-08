@@ -1,6 +1,6 @@
 package com.michredk.network
 
-import com.michredk.network.model.NetworkSensorsData
+import com.michredk.network.model.NetworkSensorData
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.Call
@@ -17,7 +17,7 @@ data class NetworkResponse<T>(
 
 private interface RetrofitAQNetworkApi: AQNetworkDataSource {
     @GET("data")
-    override suspend fun getData(): NetworkResponse<NetworkSensorsData>
+    override suspend fun getData(): NetworkResponse<NetworkSensorData>
 }
 
 private const val AQ_BASE_URL = BuildConfig.BASE_URL
@@ -38,7 +38,7 @@ internal class RetrofitAQNetwork @Inject constructor(
             .build()
             .create(RetrofitAQNetworkApi::class.java)
 
-    override suspend fun getData(): NetworkResponse<NetworkSensorsData> =
+    override suspend fun getData(): NetworkResponse<NetworkSensorData> =
         networkApi.getData()
 
 }
