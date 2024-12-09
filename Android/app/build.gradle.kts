@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -49,6 +52,11 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(project(":data"))
+    implementation(project(":model"))
+    implementation(project(":network"))
+    implementation(libs.androidx.adaptive.android)
+    implementation(project(":common"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,4 +64,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // hilt
+    implementation(libs.hilt.android)
+    ksp(libs.dagger.hilt.android.compiler)
+    ksp (libs.androidx.hilt.compiler)
+
+    implementation(libs.core.splashscreen)
+
+    //navigation
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.navigation.compose)
 }

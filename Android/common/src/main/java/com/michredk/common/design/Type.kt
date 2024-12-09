@@ -1,4 +1,4 @@
-package com.michredk.airq.ui.theme
+package com.michredk.common.design
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

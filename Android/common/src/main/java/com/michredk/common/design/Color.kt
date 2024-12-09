@@ -1,4 +1,4 @@
-package com.michredk.airq.ui.theme
+package com.michredk.common.design
 
 import androidx.compose.ui.graphics.Color
 
