@@ -4,14 +4,14 @@ import java.util.Properties
 val propertiesFile = rootProject.file("secret.properties")
 val properties = Properties()
 properties.load(FileInputStream(propertiesFile))
-val localPropertyValue = properties.getProperty("base.url")
-val systemEnvValue = System.getenv("BASE_URL")
-rootProject.extensions.extraProperties["base_url"] = systemEnvValue ?: localPropertyValue
+val localPropertyValue: String = properties.getProperty("base.url")
+val systemEnvValue: String = System.getenv("BASE_URL") ?: ""
+rootProject.extensions.extraProperties["base_url"] = systemEnvValue
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -43,10 +43,11 @@ android {
 
         debug {
             buildConfigField("Boolean", "DEBUG", "true")
+            buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
         }
     }
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
+//        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -60,11 +61,12 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(project(":model"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+//    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     // hilt
     implementation(libs.hilt.android)

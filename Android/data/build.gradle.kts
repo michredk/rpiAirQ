@@ -1,12 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.devtools.ksp)
 }
 
 android {
     namespace = "com.michredk.data"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -49,4 +49,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
     ksp (libs.androidx.hilt.compiler)
+
+    implementation(libs.retrofit)
 }
