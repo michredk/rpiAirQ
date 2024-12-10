@@ -43,23 +43,21 @@ sealed interface MetricsScreenUiState {
 fun MetricsScreen(sensorData: NetworkSensorData) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 36.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceAround) {
         TemperatureIndicator(modifier = Modifier.padding(12.dp), sensorData.temperature)
-        AirQualityCircularIndicator(
-            modifier = Modifier.size(200.dp),
-            sensorData.pm10,
-            sensorData.pm25,
-            sensorData.pm100
+        CommonAirQualityIndexIndicator(
+            pm25 = sensorData.pm25,
+            pm100 = sensorData.pm100
         )
         HumidityIndicator(modifier = Modifier.padding(12.dp), sensorData.humidity)
     }
 }
 
-@Composable
-fun AirQualityCircularIndicator(modifier: Modifier = Modifier, pm10: Int, pm25: Int, pm100: Int) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(modifier = modifier.fillMaxSize(), progress = { pm100 / 500f})
-        CircularProgressIndicator(modifier = modifier.fillMaxSize().scale(0.8f), progress = { pm100 / 500f})
-    }
-}
+//@Composable
+//fun AirQualityCircularIndicator(modifier: Modifier = Modifier, pm10: Int, pm25: Int, pm100: Int) {
+//    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//        CircularProgressIndicator(modifier = modifier.fillMaxSize(), progress = { pm100 / 500f})
+//        CircularProgressIndicator(modifier = modifier.fillMaxSize().scale(0.8f), progress = { pm100 / 500f})
+//    }
+//}
 
 @Composable
 fun TemperatureIndicator(modifier: Modifier = Modifier, temperature: Float) {
