@@ -15,11 +15,12 @@ import com.michredk.data.util.NetworkMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.michredk.airq.MainActivityUiState.Loading
+import com.michredk.metrics.MetricsScreenUiState.Loading
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.michredk.airq.ui.AQApp
 import com.michredk.airq.ui.rememberAQAppState
 import com.michredk.common.design.AQTheme
+import com.michredk.metrics.MetricsScreenUiState
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        var uiState: MainActivityUiState by mutableStateOf(Loading)
+        var uiState: MetricsScreenUiState by mutableStateOf(Loading)
 
         // Update the data
         lifecycleScope.launch {
@@ -64,7 +65,7 @@ class MainActivity : ComponentActivity() {
             val appState = rememberAQAppState(networkMonitor)
 
             AQTheme{
-                AQApp(appState)
+                AQApp(appState, uiState)
             }
 
         }

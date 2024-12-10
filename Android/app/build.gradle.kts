@@ -57,6 +57,7 @@ dependencies {
     implementation(project(":network"))
     implementation(libs.androidx.adaptive.android)
     implementation(project(":common"))
+    implementation(project(":feature:metrics"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -47,7 +47,6 @@ android {
         }
     }
     compileOptions {
-//        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -65,8 +64,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-//    coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     // hilt
     implementation(libs.hilt.android)

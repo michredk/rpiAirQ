@@ -1,7 +1,6 @@
 package com.michredk.airq.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -10,40 +9,31 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration.Indefinite
-import androidx.compose.material3.SnackbarDuration.Short
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult.ActionPerformed
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import com.michredk.airq.R
+import com.michredk.metrics.MetricsScreenUiState
+import com.michredk.metrics.MetricsScreenUiState.Error
+import com.michredk.metrics.MetricsScreenUiState.Success
+import com.michredk.metrics.MetricsScreenUiState.Loading
 import com.michredk.common.design.AQBackground
 import com.michredk.common.design.AQGradientBackground
-import kotlin.reflect.KClass
+import com.michredk.metrics.MetricsScreen
 
 @Composable
 fun AQApp(
     appState: AQAppState,
+    uiState: MetricsScreenUiState,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
@@ -70,6 +60,7 @@ fun AQApp(
 
             AQApp(
                 appState = appState,
+                uiState = uiState,
                 snackbarHostState = snackbarHostState,
                 windowAdaptiveInfo = windowAdaptiveInfo,
             )
@@ -81,6 +72,7 @@ fun AQApp(
 @Composable
 internal fun AQApp(
     appState: AQAppState,
+    uiState: MetricsScreenUiState,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
@@ -92,7 +84,7 @@ internal fun AQApp(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { padding ->
-            Column(
+            Box(
                 Modifier
                     .fillMaxSize()
                     .padding(padding)
@@ -104,6 +96,21 @@ internal fun AQApp(
                     ),
             ) {
 
+                when (uiState) {
+                    is Success -> MetricsScreen(uiState.sensorData)
+                    is Error -> ErrorScreen(message = uiState.message)
+                    is Loading -> LoadingScreen()
+                }
             }
         }
+}
+
+@Composable
+fun LoadingScreen() {
+    Text("Loading...")
+}
+
+@Composable
+fun ErrorScreen(modifier: Modifier = Modifier, message: String) {
+    Text("Error Screen: $message")
 }
