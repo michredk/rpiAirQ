@@ -8,33 +8,34 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.michredk.common.design.AQTheme
-import kotlin.math.max
+import com.michredk.common.design.GoodQualityColor
+import com.michredk.common.design.ModerateQualityColor
+import com.michredk.common.design.PoorQualityColor
+import com.michredk.common.design.SevereQualityColor
+import com.michredk.common.design.UnhealthyQualityColor
 
 @Preview(showBackground = true)
 @Composable
@@ -50,57 +51,50 @@ fun UsageOfIndicator() {
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CommonAirQualityIndexIndicator(pm25 = 25, pm100 = 100)
+        AirQualityIndexIndicator(caqiValue = 15)
     }
 }
 
 @Composable
-fun CommonAirQualityIndexIndicator(
+fun AirQualityIndexIndicator(
     canvasSize: Dp = 200.dp,
-    maxIndicatorValue: Int = 100,
-    backgroundIndicatorColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-    backgroundIndicatorStrokeWidth: Float = 100f,
-    foregroundIndicatorColor: Color = MaterialTheme.colorScheme.primary,
-    foregroundIndicatorStrokeWidth: Float = 100f,
+    backgroundIndicatorStrokeWidth: Float = 30f,
+    foregroundIndicatorStrokeWidth: Float = 30f,
     valueColor: Color = MaterialTheme.colorScheme.onSurface,
-    valueFontSize: TextUnit = MaterialTheme.typography.displayMedium.fontSize,
-    valueSuffix: String = "GB",
-    descriptionText: String = "Remaining",
-    descriptionColor: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-    descriptionFontSize: TextUnit = MaterialTheme.typography.titleLarge.fontSize,
-    pm25: Int,
-    pm100: Int
+    valueFontSize: TextUnit = MaterialTheme.typography.displaySmall.fontSize,
+    caqiValue: Int
 ) {
-    val qualityLevels = arrayOf("Good", "Moderate", "Poor", "Unhealthy", "Severe")
-    val pm25Level = when (pm25){
-        in 0..15 -> qualityLevels[0]
-        in 16..30 -> qualityLevels[1]
-        in 31..55 -> qualityLevels[2]
-        in 56..110 -> qualityLevels[3]
-        else -> qualityLevels[4]
+    val qualityLevelsStringArray = arrayOf("Very Good", "Good", "Moderate", "Poor", "Unhealthy")
+    val qualityColorsArray = arrayOf(
+        GoodQualityColor,
+        ModerateQualityColor,
+        PoorQualityColor,
+        UnhealthyQualityColor,
+        SevereQualityColor
+    )
+
+    val qualityLevel = when (caqiValue) {
+        in 0..25 -> 0
+        in 26..50 -> 1
+        in 51..75 -> 2
+        in 76..99 -> 3
+        else -> 4
     }
-    val pm100Level = when (pm25){
-        in 0..25 -> qualityLevels[0]
-        in 26..50 -> qualityLevels[1]
-        in 51..75 -> qualityLevels[2]
-        in 76..100 -> qualityLevels[3]
-        else -> qualityLevels[4]
-    }
-    val overalQuality = max(qualityLevels.indexOf(pm25Level), qualityLevels.indexOf(pm100Level))
-    val indicatorLevel = overalQuality.toFloat() / qualityLevels.size.toFloat()
+    val qualityLevelString = qualityLevelsStringArray[qualityLevel]
+    val qualityLevelColor = qualityColorsArray[qualityLevel]
 
     // 240 is maximum angle of indicator so 240 / 100 percent = 2.4
     // targetValue must be a maximum of 240 so max 100 percent is allowed
     val sweepAngle by animateFloatAsState(
-        targetValue = (2.4 * minOf(indicatorLevel, 100f)).toFloat(),
+        targetValue = caqiValue.toFloat() * 360 / 100,
         animationSpec = tween(1000), label = "indicator value animation"
     )
     val valueProgression by animateIntAsState(
-        targetValue = pm100,
+        targetValue = caqiValue,
         animationSpec = tween(1000)
     )
     val animatedValueColor by animateColorAsState(
-        targetValue = if (pm100 == 0)
+        targetValue = if (caqiValue == 100)
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
         else
             valueColor,
@@ -112,19 +106,44 @@ fun CommonAirQualityIndexIndicator(
             .size(canvasSize)
             .drawBehind {
                 val indicatorSize = size / 1.25f
-                // background
-                circularIndicator(
-                    sweepAngle = 240f,
-                    indicatorSize = indicatorSize,
-                    color = backgroundIndicatorColor,
-                    strokeWidth = backgroundIndicatorStrokeWidth,
-                )
-                // animated foreground
+                val innerIndicatorSize = size / 1.75f
+                val innerCircleSize = size / 2.75f
                 circularIndicator(
                     sweepAngle = sweepAngle,
                     indicatorSize = indicatorSize,
-                    color = foregroundIndicatorColor,
+                    foregroundColor = qualityLevelColor,
                     strokeWidth = foregroundIndicatorStrokeWidth,
+                )
+                val foregroundBrush = createStripeBrush(
+                    stripeColor = qualityLevelColor,
+                    stripeWidth = 1.dp,
+                    stripeToGapRatio = 1.8f
+                )
+                val backgroundBrush = createStripeBrush(
+                    stripeColor = qualityLevelColor.copy(0.15f),
+                    stripeWidth = 1.dp,
+                    stripeToGapRatio = 1.8f
+                )
+                innerCircularIndicator(
+                    foregroundBrush = foregroundBrush,
+                    backgroundBrush = backgroundBrush,
+                    sweepAngle = sweepAngle,
+                    indicatorSize = innerIndicatorSize,
+                    strokeWidth = backgroundIndicatorStrokeWidth
+                )
+                drawArc(
+                    size = innerCircleSize,
+                    color = Color.Gray.copy(0.15f),
+                    startAngle = 0f,
+                    sweepAngle = 360f,
+                    useCenter = false,
+                    style = Stroke(
+                        width = 5f
+                    ),
+                    topLeft = Offset(
+                        x = (size.width - innerCircleSize.width) / 2f,
+                        y = (size.height - innerCircleSize.height) / 2f
+                    )
                 )
             },
         verticalArrangement = Arrangement.Center,
@@ -133,11 +152,7 @@ fun CommonAirQualityIndexIndicator(
         EmbeddedElements(
             valueText = valueProgression,
             valueColor = animatedValueColor,
-            valueFontSize = valueFontSize,
-            valueSuffix = valueSuffix,
-            descriptionText = descriptionText,
-            descriptionColor = descriptionColor,
-            descriptionFontSize = descriptionFontSize
+            valueFontSize = valueFontSize
         )
     }
 }
@@ -150,13 +165,14 @@ fun CommonAirQualityIndexIndicator(
 fun DrawScope.circularIndicator(
     sweepAngle: Float,
     indicatorSize: Size,
-    color: Color,
+    foregroundColor: Color,
+    backgroundColor: Color = foregroundColor.copy(alpha = 0.15f),
     strokeWidth: Float
 ) {
     drawArc(
         size = indicatorSize,
-        color = color,
-        startAngle = 150f,
+        color = foregroundColor,
+        startAngle = 270f,
         sweepAngle = sweepAngle,
         useCenter = false,
         style = Stroke(
@@ -170,26 +186,89 @@ fun DrawScope.circularIndicator(
             y = (size.height - indicatorSize.height) / 2f
         )
     )
+    drawArc(
+        size = indicatorSize,
+        color = backgroundColor,
+        startAngle = 270f,
+        sweepAngle = 360f,
+        useCenter = false,
+        style = Stroke(
+            width = strokeWidth,
+            cap = StrokeCap.Butt
+        ),
+        topLeft = Offset(
+            x = (size.width - indicatorSize.width) / 2f,
+            y = (size.height - indicatorSize.height) / 2f
+        )
+    )
+}
+
+fun DrawScope.innerCircularIndicator(
+    foregroundBrush: Brush,
+    backgroundBrush: Brush,
+    sweepAngle: Float,
+    indicatorSize: Size,
+    strokeWidth: Float
+) {
+    drawArc(
+        size = indicatorSize,
+        brush = foregroundBrush,
+        startAngle = 270f,
+        sweepAngle = sweepAngle,
+        useCenter = false,
+        style = Stroke(
+            width = strokeWidth,
+            cap = StrokeCap.Butt
+        ),
+        topLeft = Offset(
+            x = (size.width - indicatorSize.width) / 2f,
+            y = (size.height - indicatorSize.height) / 2f
+        )
+    )
+    drawArc(
+        size = indicatorSize,
+        brush = backgroundBrush,
+        startAngle = 270f,
+        sweepAngle = 360f,
+        useCenter = false,
+        style = Stroke(
+            width = strokeWidth,
+            cap = StrokeCap.Butt
+        ),
+        topLeft = Offset(
+            x = (size.width - indicatorSize.width) / 2f,
+            y = (size.height - indicatorSize.height) / 2f
+        )
+    )
+}
+
+private fun Density.createStripeBrush(
+    stripeColor: Color,
+    stripeWidth: Dp,
+    stripeToGapRatio: Float
+): Brush {
+    val stripeWidthPx = stripeWidth.toPx()
+    val stripeGapWidthPx = stripeWidthPx / stripeToGapRatio
+    val brushSizePx = stripeGapWidthPx + stripeWidthPx
+    val stripeStart = stripeGapWidthPx / brushSizePx
+
+    return Brush.linearGradient(
+        stripeStart to Color.Transparent,
+        stripeStart to stripeColor,
+        start = Offset(0f, 0f),
+        end = Offset(brushSizePx, brushSizePx),
+        tileMode = TileMode.Repeated
+    )
 }
 
 @Composable
 fun EmbeddedElements(
     valueText: Int,
     valueColor: Color,
-    valueFontSize: TextUnit,
-    valueSuffix: String,
-    descriptionText: String,
-    descriptionColor: Color,
-    descriptionFontSize: TextUnit
+    valueFontSize: TextUnit
 ) {
     Text(
-        text = descriptionText,
-        color = descriptionColor,
-        fontSize = descriptionFontSize,
-        textAlign = TextAlign.Center,
-    )
-    Text(
-        text = "$valueText $valueSuffix",
+        text = "$valueText",
         color = valueColor,
         fontSize = valueFontSize,
         textAlign = TextAlign.Center,

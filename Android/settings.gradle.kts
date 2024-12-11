@@ -22,7 +22,7 @@ dependencyResolutionManagement {
 rootProject.name = "AirQ"
 include(":app")
 include(":common")
-include(":model")
 include(":network")
 include(":feature:metrics")
 include(":data")
+include(":domian")

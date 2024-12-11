@@ -11,13 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Thermostat
-import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.outlined.WaterDrop
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,39 +22,37 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.michredk.common.design.AQTheme
 import com.michredk.network.model.NetworkSensorData
+import java.time.LocalDateTime
 
 sealed interface MetricsScreenUiState {
     data object Loading : MetricsScreenUiState
     data class Error(val message: String) : MetricsScreenUiState
-    data class Success(val sensorData: NetworkSensorData) : MetricsScreenUiState
+    data class Success(
+        val sensorData: NetworkSensorData,
+        val caiq: Int,
+        val dateTime: LocalDateTime = LocalDateTime.now()
+    ) : MetricsScreenUiState
 }
 
 @Composable
-fun MetricsScreen(sensorData: NetworkSensorData) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 36.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceAround) {
-        TemperatureIndicator(modifier = Modifier.padding(12.dp), sensorData.temperature)
-        CommonAirQualityIndexIndicator(
-            pm25 = sensorData.pm25,
-            pm100 = sensorData.pm100
-        )
-        HumidityIndicator(modifier = Modifier.padding(12.dp), sensorData.humidity)
+fun MetricsScreen(uiState: MetricsScreenUiState.Success) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 36.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        TemperatureIndicator(modifier = Modifier.padding(12.dp), uiState.sensorData.temperature)
+        AirQualityIndexIndicator(caqiValue = uiState.caiq)
+        HumidityIndicator(modifier = Modifier.padding(12.dp), uiState.sensorData.humidity)
     }
 }
-
-//@Composable
-//fun AirQualityCircularIndicator(modifier: Modifier = Modifier, pm10: Int, pm25: Int, pm100: Int) {
-//    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//        CircularProgressIndicator(modifier = modifier.fillMaxSize(), progress = { pm100 / 500f})
-//        CircularProgressIndicator(modifier = modifier.fillMaxSize().scale(0.8f), progress = { pm100 / 500f})
-//    }
-//}
 
 @Composable
 fun TemperatureIndicator(modifier: Modifier = Modifier, temperature: Float) {
@@ -105,12 +100,16 @@ fun PreviewMetricScreen() {
                     ),
             ) {
                 MetricsScreen(
-                    NetworkSensorData(
-                        temperature = 23.1f,
-                        humidity = 47.5f,
-                        pm10 = 10,
-                        pm25 = 25,
-                        pm100 = 100
+                    MetricsScreenUiState.Success(
+                        sensorData = NetworkSensorData(
+                            temperature = 23.1f,
+                            humidity = 47.5f,
+                            pm10 = 10,
+                            pm25 = 25,
+                            pm100 = 100
+                        ),
+                        caiq = 100,
+                        dateTime = LocalDateTime.now()
                     )
                 )
             }

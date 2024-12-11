@@ -97,7 +97,7 @@ internal fun AQApp(
             ) {
 
                 when (uiState) {
-                    is Success -> MetricsScreen(uiState.sensorData)
+                    is Success -> MetricsScreen(uiState)
                     is Error -> ErrorScreen(message = uiState.message)
                     is Loading -> LoadingScreen()
                 }
