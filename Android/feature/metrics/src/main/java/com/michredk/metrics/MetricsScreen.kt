@@ -2,6 +2,7 @@ package com.michredk.metrics
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -23,11 +24,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.michredk.common.design.AQTheme
+import com.michredk.common.design.VeryGoodQualityColor
+import com.michredk.common.design.GoodQualityColor
+import com.michredk.common.design.ModerateQualityColor
+import com.michredk.common.design.UnhealthyQualityColor
+import com.michredk.common.design.PoorQualityColor
 import com.michredk.network.model.NetworkSensorData
 import java.time.LocalDateTime
+import com.michredk.metrics.QualityLevel.VeryGoodQuality
+import com.michredk.metrics.QualityLevel.GoodQuality
+import com.michredk.metrics.QualityLevel.ModerateQuality
+import com.michredk.metrics.QualityLevel.PoorQuality
+import com.michredk.metrics.QualityLevel.UnhealthyQuality
+import java.time.Duration
 
 sealed interface MetricsScreenUiState {
     data object Loading : MetricsScreenUiState
@@ -39,19 +53,75 @@ sealed interface MetricsScreenUiState {
     ) : MetricsScreenUiState
 }
 
+enum class QualityLevel {
+    VeryGoodQuality,
+    GoodQuality,
+    ModerateQuality,
+    PoorQuality,
+    UnhealthyQuality
+}
+
 @Composable
 fun MetricsScreen(uiState: MetricsScreenUiState.Success) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 36.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        TemperatureIndicator(modifier = Modifier.padding(12.dp), uiState.sensorData.temperature)
-        AirQualityIndexIndicator(caqiValue = uiState.caiq)
-        HumidityIndicator(modifier = Modifier.padding(12.dp), uiState.sensorData.humidity)
+    val qualityLevelsStringArray = arrayOf("Very Good", "Good", "Moderate", "Poor", "Unhealthy")
+    val qualityColorsArray = arrayOf(
+        VeryGoodQualityColor,
+        GoodQualityColor,
+        ModerateQualityColor,
+        PoorQualityColor,
+        UnhealthyQualityColor
+    )
+    val qualityLevel = when (uiState.caiq) {
+        in 0..25 -> VeryGoodQuality
+        in 26..50 -> GoodQuality
+        in 51..75 -> ModerateQuality
+        in 76..99 -> PoorQuality
+        else -> UnhealthyQuality
     }
+    val qualityLevelColor = qualityColorsArray[qualityLevel.ordinal]
+    val qualityLevelString = qualityLevelsStringArray[qualityLevel.ordinal]
+
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 36.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            TemperatureIndicator(modifier = Modifier.padding(12.dp), uiState.sensorData.temperature)
+            CircularAirQualityIndicator(caqiValue = uiState.caiq, qualityLevelColor = qualityLevelColor)
+            HumidityIndicator(modifier = Modifier.padding(12.dp), uiState.sensorData.humidity)
+        }
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "$qualityLevelString Air Quality",
+            color = qualityLevelColor,
+            fontSize = MaterialTheme.typography.titleLarge.fontSize,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold
+        )
+        LastUpdatedText(uiState.dateTime)
+        HorizontalAirQualityIndicator(qualityLevel = qualityLevel)
+    }
+}
+
+@Composable
+private fun LastUpdatedText(dateTime: LocalDateTime, modifier: Modifier = Modifier) {
+    val lastUpdated =
+        when (val minutes = Duration.between(dateTime, LocalDateTime.now()).toMinutes()) {
+            0L -> "now"
+            in 1..59 -> "$minutes mins ago"
+            in 60L..Long.MAX_VALUE -> "more than hour ago"
+            else -> "error"
+        }
+    Text(
+        modifier = modifier.fillMaxWidth(),
+        text = "Last updated: $lastUpdated",
+        color = Color.Gray,
+        fontSize = MaterialTheme.typography.titleSmall.fontSize,
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable
@@ -106,9 +176,9 @@ fun PreviewMetricScreen() {
                             humidity = 47.5f,
                             pm10 = 10,
                             pm25 = 25,
-                            pm100 = 100
+                            pm100 = 90
                         ),
-                        caiq = 100,
+                        caiq = 24,
                         dateTime = LocalDateTime.now()
                     )
                 )

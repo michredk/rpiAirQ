@@ -31,58 +31,35 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.michredk.common.design.AQTheme
-import com.michredk.common.design.GoodQualityColor
-import com.michredk.common.design.ModerateQualityColor
-import com.michredk.common.design.PoorQualityColor
-import com.michredk.common.design.SevereQualityColor
-import com.michredk.common.design.UnhealthyQualityColor
+import com.michredk.common.design.VeryGoodQualityColor
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewCustomComponent() {
+fun PreviewCircularIndicator() {
     AQTheme {
-        UsageOfIndicator()
+        UsageOfCircularIndicator()
     }
 }
 
 @Composable
-fun UsageOfIndicator() {
+fun UsageOfCircularIndicator() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AirQualityIndexIndicator(caqiValue = 15)
+        CircularAirQualityIndicator(caqiValue = 15, qualityLevelColor = VeryGoodQualityColor)
     }
 }
 
 @Composable
-fun AirQualityIndexIndicator(
+fun CircularAirQualityIndicator(
     canvasSize: Dp = 200.dp,
-    backgroundIndicatorStrokeWidth: Float = 30f,
-    foregroundIndicatorStrokeWidth: Float = 30f,
+    indicatorStrokeWidth: Float = 30f,
     valueColor: Color = MaterialTheme.colorScheme.onSurface,
     valueFontSize: TextUnit = MaterialTheme.typography.displaySmall.fontSize,
-    caqiValue: Int
+    caqiValue: Int,
+    qualityLevelColor: Color
 ) {
-    val qualityLevelsStringArray = arrayOf("Very Good", "Good", "Moderate", "Poor", "Unhealthy")
-    val qualityColorsArray = arrayOf(
-        GoodQualityColor,
-        ModerateQualityColor,
-        PoorQualityColor,
-        UnhealthyQualityColor,
-        SevereQualityColor
-    )
-
-    val qualityLevel = when (caqiValue) {
-        in 0..25 -> 0
-        in 26..50 -> 1
-        in 51..75 -> 2
-        in 76..99 -> 3
-        else -> 4
-    }
-    val qualityLevelString = qualityLevelsStringArray[qualityLevel]
-    val qualityLevelColor = qualityColorsArray[qualityLevel]
-
     // 240 is maximum angle of indicator so 240 / 100 percent = 2.4
     // targetValue must be a maximum of 240 so max 100 percent is allowed
     val sweepAngle by animateFloatAsState(
@@ -112,7 +89,7 @@ fun AirQualityIndexIndicator(
                     sweepAngle = sweepAngle,
                     indicatorSize = indicatorSize,
                     foregroundColor = qualityLevelColor,
-                    strokeWidth = foregroundIndicatorStrokeWidth,
+                    strokeWidth = indicatorStrokeWidth,
                 )
                 val foregroundBrush = createStripeBrush(
                     stripeColor = qualityLevelColor,
@@ -129,7 +106,7 @@ fun AirQualityIndexIndicator(
                     backgroundBrush = backgroundBrush,
                     sweepAngle = sweepAngle,
                     indicatorSize = innerIndicatorSize,
-                    strokeWidth = backgroundIndicatorStrokeWidth
+                    strokeWidth = indicatorStrokeWidth
                 )
                 drawArc(
                     size = innerCircleSize,
