@@ -1,16 +1,19 @@
 package com.michredk.domian
 
+import javax.inject.Inject
+
 /**
  * The Common Air Quality Index (CAQI) is a standardized index used to represent air quality.
  */
-class CalculateCAQIUseCase() {
+class CalculateCAQIUseCase @Inject constructor() {
 
     data class CAQIBreakpoint(val low: Int, val high: Int, val aqiLow: Int, val aqiHigh: Int)
 
     private fun calculateCAQI(concentration: Int, breakpoints: List<CAQIBreakpoint>): Int {
         for (breakpoint in breakpoints) {
-            if (concentration >= breakpoint.low && concentration <= breakpoint.high) {
-                return ((breakpoint.aqiHigh - breakpoint.aqiLow) / (breakpoint.high - breakpoint.low) * (concentration - breakpoint.low) + breakpoint.aqiLow)
+            if (concentration in breakpoint.low..breakpoint.high) {
+                val level = (concentration - breakpoint.low).toFloat() / (breakpoint.high - breakpoint.low)
+                return (level * (breakpoint.aqiHigh - breakpoint.aqiLow) + breakpoint.aqiLow).toInt()
             }
         }
         throw IllegalArgumentException("Concentration out of range")

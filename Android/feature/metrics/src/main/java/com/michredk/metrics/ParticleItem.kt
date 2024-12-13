@@ -31,14 +31,7 @@ import com.michredk.common.design.UnhealthyQualityColor
 import com.michredk.common.design.VeryGoodQualityColor
 
 @Composable
-fun ParticleItem(particleName: String, particleValue: Int, concentration: Float, width: Dp) {
-    val qualityColor = when(concentration) {
-            in 0f..0.25f -> VeryGoodQualityColor
-            in 0.26f..0.50f -> GoodQualityColor
-            in 0.51f..0.75f -> ModerateQualityColor
-            in 0.76f..0.99f -> PoorQualityColor
-            else -> UnhealthyQualityColor
-    }
+fun ParticleItem(particleName: String, particleValue: Int, qualityColor: Color, concentration: Float, width: Dp) {
     Column(modifier = Modifier.width(width)) {
         Text(
             particleName,
@@ -114,7 +107,7 @@ fun ParticleItem(particleName: String, particleValue: Int, concentration: Float,
 @Composable
 private fun SingleParticleDataDisplayPreview() {
     AQTheme {
-        ParticleItem("PM 2.5", 3, 0.03f, width = 200.dp)
+        ParticleItem("PM 2.5", 3, VeryGoodQualityColor, concentration = 0.01f, width = 200.dp)
     }
 }
 
@@ -122,6 +115,6 @@ private fun SingleParticleDataDisplayPreview() {
 @Composable
 private fun SingleParticleUnhealthyDataDisplayPreview() {
     AQTheme {
-        ParticleItem("PM 10", 100, 1f, width = 150.dp)
+        ParticleItem("PM 10", 100, UnhealthyQualityColor, concentration = 1f, width = 150.dp)
     }
 }

@@ -1,6 +1,7 @@
 package com.michredk.airq.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -21,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.michredk.metrics.MetricsScreenUiState
 import com.michredk.metrics.MetricsScreenUiState.Error
@@ -39,9 +41,9 @@ fun AQApp(
 ) {
     AQBackground(modifier = modifier) {
         AQGradientBackground(
-            top = Color.Red,
-            bottom = Color.Blue,
-            container = Color.Green
+            top = Color.White,
+            bottom = Color.White,
+            container = Color.White
         ) {
             val snackbarHostState = remember { SnackbarHostState() }
 
@@ -112,5 +114,8 @@ fun LoadingScreen() {
 
 @Composable
 fun ErrorScreen(modifier: Modifier = Modifier, message: String) {
-    Text("Error Screen: $message")
+
+        Column(modifier = modifier.padding(64.dp)) {
+            Text("Error Screen: $message")
+        }
 }

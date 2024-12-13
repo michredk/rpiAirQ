@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.michredk.domian"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -25,6 +25,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -41,6 +42,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":feature:metrics"))
     implementation(project(":network"))
+    implementation(project(":common"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -49,4 +51,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.dagger.hilt.android.compiler)
     ksp (libs.androidx.hilt.compiler)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

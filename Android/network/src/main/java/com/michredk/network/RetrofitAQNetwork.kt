@@ -18,11 +18,12 @@ sealed class NetworkResult<T : Any> {
 }
 
 private interface RetrofitAQNetworkApi : AQRemoteApi {
-    @GET("data")
+    @GET("get-data")
     override suspend fun getData(): Response<NetworkSensorData>
 }
 
-private const val AQ_BASE_URL = BuildConfig.BASE_URL
+//private const val AQ_BASE_URL = BuildConfig.BASE_URL
+private const val AQ_BASE_URL = "http://192.168.0.5:4014"
 
 internal class RetrofitAQNetwork @Inject constructor(
     networkJson: Json,

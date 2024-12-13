@@ -136,6 +136,13 @@ fun MetricsScreen(uiState: MetricsScreenUiState.Success) {
                         in 0..109 -> uiState.sensorData.pm10 / 110f
                         else -> 1f
                     },
+                    qualityColor = when (uiState.sensorData.pm10) {
+                        in 0..10 -> VeryGoodQualityColor
+                        in 11..20 -> GoodQualityColor
+                        in 21..35 -> ModerateQualityColor
+                        in 36..60 -> PoorQualityColor
+                        else -> UnhealthyQualityColor
+                    },
                     width = itemWidth
                 )
             }
@@ -147,6 +154,13 @@ fun MetricsScreen(uiState: MetricsScreenUiState.Success) {
                         in 0..109 -> uiState.sensorData.pm25 / 110f
                         else -> 1f
                     },
+                    qualityColor = when (uiState.sensorData.pm25) {
+                        in 0..15 -> VeryGoodQualityColor
+                        in 16..30 -> GoodQualityColor
+                        in 31..55 -> ModerateQualityColor
+                        in 56..110 -> PoorQualityColor
+                        else -> UnhealthyQualityColor
+                    },
                     width = itemWidth
                 )
             }
@@ -157,6 +171,13 @@ fun MetricsScreen(uiState: MetricsScreenUiState.Success) {
                     concentration = when (uiState.sensorData.pm100) {
                         in 0..179 -> uiState.sensorData.pm100 / 180f
                         else -> 1f
+                    },
+                    qualityColor = when (uiState.sensorData.pm100) {
+                        in 0..25 -> VeryGoodQualityColor
+                        in 26..50 -> GoodQualityColor
+                        in 51..90 -> ModerateQualityColor
+                        in 90..180 -> PoorQualityColor
+                        else -> UnhealthyQualityColor
                     },
                     width = itemWidth
                 )
@@ -233,11 +254,11 @@ fun PreviewMetricScreen() {
                         sensorData = NetworkSensorData(
                             temperature = 23.1f,
                             humidity = 47.5f,
-                            pm10 = 10,
-                            pm25 = 25,
-                            pm100 = 90
+                            pm10 = 29,
+                            pm25 = 54,
+                            pm100 = 45
                         ),
-                        caiq = 24,
+                        caiq = 73,
                         dateTime = LocalDateTime.now()
                     )
                 )

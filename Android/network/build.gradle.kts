@@ -1,3 +1,4 @@
+import com.android.ddmlib.Log
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -43,6 +44,7 @@ android {
 
         debug {
             buildConfigField("Boolean", "DEBUG", "true")
+            Log.d("mytagforlogging", "baseurl: $baseUrl")
             buildConfigField("String", "BASE_URL", "\"${baseUrl}\"")
         }
     }
