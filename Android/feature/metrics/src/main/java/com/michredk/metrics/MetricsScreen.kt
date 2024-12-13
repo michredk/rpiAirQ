@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.outlined.WaterDrop
@@ -21,9 +22,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -90,7 +97,10 @@ fun MetricsScreen(uiState: MetricsScreenUiState.Success) {
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             TemperatureIndicator(modifier = Modifier.padding(12.dp), uiState.sensorData.temperature)
-            CircularAirQualityIndicator(caqiValue = uiState.caiq, qualityLevelColor = qualityLevelColor)
+            CircularAirQualityIndicator(
+                caqiValue = uiState.caiq,
+                qualityLevelColor = qualityLevelColor
+            )
             HumidityIndicator(modifier = Modifier.padding(12.dp), uiState.sensorData.humidity)
         }
         Text(
@@ -103,6 +113,55 @@ fun MetricsScreen(uiState: MetricsScreenUiState.Success) {
         )
         LastUpdatedText(uiState.dateTime)
         HorizontalAirQualityIndicator(qualityLevel = qualityLevel)
+        AirQualityLevelDescriptionTextBox(
+            modifier = Modifier.padding(16.dp),
+            qualityLevel = qualityLevel,
+            qualityColor = qualityLevelColor
+        )
+        var columnWidth by remember { mutableStateOf(0.dp) }
+        val itemWidth = columnWidth - columnWidth / 6
+        val density = LocalDensity.current
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .onSizeChanged { size -> with(density) { columnWidth = size.width.toDp() } }
+        ) {
+            item {
+                ParticleItem(
+                    particleName = "PM 1",
+                    particleValue = uiState.sensorData.pm10,
+                    concentration = when (uiState.sensorData.pm10) {
+                        in 0..109 -> uiState.sensorData.pm10 / 110f
+                        else -> 1f
+                    },
+                    width = itemWidth
+                )
+            }
+            item {
+                ParticleItem(
+                    particleName = "PM 2.5",
+                    particleValue = uiState.sensorData.pm25,
+                    concentration = when (uiState.sensorData.pm25) {
+                        in 0..109 -> uiState.sensorData.pm25 / 110f
+                        else -> 1f
+                    },
+                    width = itemWidth
+                )
+            }
+            item {
+                ParticleItem(
+                    particleName = "PM 10",
+                    particleValue = uiState.sensorData.pm100,
+                    concentration = when (uiState.sensorData.pm100) {
+                        in 0..179 -> uiState.sensorData.pm100 / 180f
+                        else -> 1f
+                    },
+                    width = itemWidth
+                )
+            }
+        }
     }
 }
 

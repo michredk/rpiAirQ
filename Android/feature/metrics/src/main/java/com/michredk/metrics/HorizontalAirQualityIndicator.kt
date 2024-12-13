@@ -1,8 +1,11 @@
 package com.michredk.metrics
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -53,6 +56,7 @@ fun HorizontalAirQualityIndicator(
     var segmentWidth by remember { mutableIntStateOf(0) }
     Column(modifier = Modifier
         .fillMaxWidth()
+        .wrapContentHeight()
         .onSizeChanged { size ->
             columnWidth = size.width
             segmentWidth = with(density) { (size.width - 2 * 30.dp.toPx()) / segmentsCount }.toInt()
@@ -136,7 +140,7 @@ fun HorizontalAirQualityIndicator(
                     )
                 )
             }
-        }) {}
+        }) { Spacer(modifier = Modifier.height(70.dp)) }
 
 }
 
