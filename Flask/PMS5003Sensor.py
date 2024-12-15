@@ -1,3 +1,6 @@
+# Essential parts written by Jianqing Peng
+# Github repository: https://github.com/pjq/rpi
+
 #!/bin/python3
 import serial
 import time
